@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 AI 模型全解析與開發者指南 | 深色互動儀表板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        /* Chart Container Styling - Strictly enforced as per requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; 
+            max-height: 450px; 
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px; 
+            }
+        }
+
+        /* Custom scrollbar for dark mode */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a; /* slate-900 */
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155; /* slate-700 */
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569; /* slate-600 */
+        }
+
+        /* Active tab styling for dark mode */
+        .tab-btn.active {
+            background-color: #4f46e5 !important; /* indigo-600 */
+            color: white !important;
+            border-color: #4f46e5 !important;
+        }
+        
+        /* Typing indicator animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 antialiased overflow-x-hidden custom-scrollbar">
+
+    <!-- Navigation / Header -->
+    <header class="bg-slate-800 shadow-md border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🧠</span>
+                <h1 class="font-bold text-xl text-indigo-400 tracking-tight">AI 模型全解析指南</h1>
+            </div>
+            
+            <div class="flex items-center gap-4 sm:gap-6">
+                <nav class="hidden md:flex space-x-6 text-sm font-medium text-slate-400 items-center">
+                    <a href="#overview" class="nav-link hover:text-indigo-400 transition-colors">陣營總覽</a>
+                    <a href="#explorer" class="nav-link hover:text-indigo-400 transition-colors">模型探索</a>
+                    <a href="#scenario" class="nav-link hover:text-indigo-400 transition-colors">情境推薦</a>
+                    <a href="#ai-chat" class="nav-link hover:text-indigo-400 transition-colors font-bold text-indigo-400">🤖 AI 助手</a>
+                </nav>
+                
+                <!-- Language & Navigation Switcher (Hyperlinks for iframe compatibility) -->
+                <div class="relative group">
+                    <button class="bg-slate-900 text-slate-300 border border-slate-600 rounded-lg px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-sm flex items-center gap-1 hover:text-indigo-400 hover:border-indigo-400 transition-colors font-medium">
+                        🌐 語言 ▼
+                    </button>
+                    <!-- 修正了這裡：加入 pt-1 當作隱形橋樑，防止滑鼠離開按鈕時選單消失 -->
+                    <div class="absolute right-0 top-full pt-1 hidden group-hover:block z-50 min-w-[180px]">
+                        <div class="bg-slate-800 border border-slate-600 rounded-lg shadow-xl overflow-hidden">
+                            <a href="https://sites.google.com/view/lunatalk" target="_blank" class="block px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-indigo-400 border-b border-slate-700 transition-colors">🏠 TW - 中文首頁 (開新分頁)</a>
+                            <a href="https://sites.google.com/view/lunatalk/lunatalk/english-home" target="_blank" class="block px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-indigo-400 border-b border-slate-700 transition-colors">🏠 EN - Home</a>
+                            <a href="https://sites.google.com/view/lunatalk/%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%B4%B9" target="_blank" class="block px-4 py-2.5 text-sm text-indigo-400 bg-slate-900/50 hover:bg-slate-700 border-b border-slate-700 transition-colors font-bold">🌐 TW - 模型介紹</a>
+                            <a href="https://sites.google.com/view/lunatalk/%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%B4%B9/model" target="_blank" class="block px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-indigo-400 transition-colors">🌐 EN - Models</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        
+        <!-- Hero Section -->
+        <section class="text-center py-10 bg-gradient-to-br from-indigo-900/40 to-slate-800 rounded-3xl border border-indigo-500/30 shadow-lg">
+            <h2 class="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">尋找你的完美 AI 聊天夥伴</h2>
+            <p class="text-lg text-slate-300 max-w-2xl mx-auto px-4 leading-relaxed">
+                從克蘇魯風 TRPG 到極致前端刻版，從病嬌人設到嚴謹企業級架構。透過這份開發者「血淚經驗」淬鍊的互動指南，為您的下一個專案找到最適合的 AI 模型陣營。
+            </p>
+        </section>
+
+        <!-- Section 1: Overview Radar Chart -->
+        <section id="overview" class="scroll-mt-24">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-slate-100 flex items-center gap-2">
+                    <span>📊</span> 六大陣營戰力雷達
+                </h3>
+                <p class="text-slate-400 mt-2">
+                    此區塊將報告中的定性描述轉化為相對的戰力指標。觀察不同陣營在五大維度的優勢分佈。點擊圖表上方的圖例可隱藏/顯示特定陣營。
+                </p>
+            </div>
+            
+            <div class="bg-slate-800 p-6 rounded-2xl shadow-md border border-slate-700">
+                <div class="chart-container">
+                    <canvas id="campRadarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Interactive Explorer -->
+        <section id="explorer" class="scroll-mt-24">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-slate-100 flex items-center gap-2">
+                    <span>🔍</span> 深入模型探索
+                </h3>
+                <p class="text-slate-400 mt-2">
+                    點擊下方各陣營標籤，深入了解每個陣營的核心特性、旗下具體模型的優缺點分析，以及開發者的真實評價。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Tabs -->
+                <div class="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-3" id="camp-tabs">
+                    <!-- JS will populate tabs here -->
+                </div>
+
+                <!-- Content Area -->
+                <div class="lg:col-span-9">
+                    <div id="camp-content" class="bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-md border border-slate-700 min-h-[400px] transition-opacity duration-300">
+                        <!-- JS will populate content here -->
+                        <div class="flex flex-col items-center justify-center h-full text-slate-500">
+                            <span class="text-4xl mb-4">👈</span>
+                            <p>請從左側選擇一個陣營開始探索</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Scenario Recommender -->
+        <section id="scenario" class="scroll-mt-24">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-slate-100 flex items-center gap-2">
+                    <span>💡</span> 開發情境智能推薦
+                </h3>
+                <p class="text-slate-400 mt-2">
+                    不知道該選哪個？告訴我們您目前正在開發的專案類型或面臨的困境，系統將根據指南為您推薦最佳解方。
+                </p>
+            </div>
+
+            <div class="bg-indigo-900 text-white p-6 sm:p-10 rounded-3xl shadow-xl relative overflow-hidden border border-indigo-700">
+                <!-- Decorative background elements -->
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-indigo-600 rounded-full opacity-40 blur-3xl"></div>
+                <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-teal-500 rounded-full opacity-20 blur-3xl"></div>
+
+                <div class="relative z-10 max-w-3xl mx-auto flex flex-col items-center text-center">
+                    <label for="scenario-select" class="text-xl sm:text-2xl font-semibold mb-6 text-indigo-50">您目前正在開發什麼樣的專案？</label>
+                    
+                    <select id="scenario-select" class="w-full max-w-md bg-slate-800/80 border border-indigo-400/50 text-white rounded-xl px-4 py-3 appearance-none focus:outline-none focus:ring-2 focus:ring-teal-400 focus:bg-slate-800 transition-colors text-lg cursor-pointer shadow-inner">
+                        <option value="" disabled selected class="text-slate-400 bg-slate-900">-- 請選擇一個情境 --</option>
+                        <option value="trpg" class="text-slate-200 bg-slate-900">⚔️ 帶有理智值/黑暗奇幻設定的 TRPG 遊戲</option>
+                        <option value="yandere" class="text-slate-200 bg-slate-900">🎭 需要極端人設 (如病嬌/傲嬌) 的 NPC 互動</option>
+                        <option value="frontend" class="text-slate-200 bg-slate-900">💻 複雜的網頁前端 HTML/UI 開發</option>
+                        <option value="worldbuild" class="text-slate-200 bg-slate-900">📜 龐大世界觀與百萬字長文本背景設定</option>
+                        <option value="nsfw" class="text-slate-200 bg-slate-900">🔓 百無禁忌、突破道德框架的成人向/深刻劇本</option>
+                        <option value="general_safe" class="text-slate-200 bg-slate-900">🛡️ 需要絕對安全、道德正確的企業級專案</option>
+                    </select>
+
+                    <!-- Result Container -->
+                    <div id="scenario-result" class="mt-8 w-full hidden">
+                        <div class="bg-slate-900/60 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-6 text-left shadow-lg">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl" id="rec-icon">🎯</span>
+                                <h4 class="text-2xl font-bold text-teal-300" id="rec-title">推薦模型</h4>
+                            </div>
+                            <p class="text-indigo-100 text-lg leading-relaxed" id="rec-desc">推薦說明將顯示於此。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: AI Q&A Chat -->
+        <section id="ai-chat" class="scroll-mt-24 mb-16">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-slate-100 flex items-center gap-2">
+                    <span>🤖</span> 專屬開發顧問問答
+                </h3>
+                <p class="text-slate-400 mt-2">
+                    針對這份「模型全解析指南」有任何具體問題嗎？可以直接詢問底下的 AI 助手。
+                </p>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-3xl shadow-lg overflow-hidden flex flex-col" style="height: 500px;">
+                <!-- Chat History -->
+                <div id="chat-history" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-slate-900/50">
+                    <!-- Initial AI Message -->
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-indigo-900/80 border border-indigo-500/50 flex items-center justify-center shrink-0 shadow-sm">
+                            <span class="text-xl">🤖</span>
+                        </div>
+                        <div class="bg-slate-800 border border-slate-700 text-slate-200 px-5 py-3 rounded-2xl rounded-tl-sm max-w-[85%] shadow-md leading-relaxed">
+                            哈囉！我是您的專屬開發顧問。如果您在選擇 DeepSeek, Gemini, Claude 等模型時遇到選擇困難，或是有特定的開發情境想討論，隨時可以問我！
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="p-4 bg-slate-800 border-t border-slate-700">
+                    <form id="chat-form" class="flex gap-2">
+                        <input type="text" id="chat-input" class="flex-1 bg-slate-900 border border-slate-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder-slate-500" placeholder="請輸入您的問題... (例如：寫個網頁遊戲推薦用誰？)" autocomplete="off">
+                        <button type="submit" id="chat-submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center justify-center min-w-[80px] shadow-md">
+                            發送
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-950 text-slate-500 py-8 text-center text-sm mt-auto border-t border-slate-800">
+        <p>© 2026 AI 模型全解析與開發者指南. Based on user-provided source report.</p>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // --- DATA STORE ---
+        const reportData = {
+            camps: [
+                {
+                    id: "deepseek",
+                    name: "DeepSeek 陣營",
+                    icon: "🐙",
+                    radarScores: [9, 4, 8, 3, 8], 
+                    color: "rgb(45, 212, 191)", // Teal-400 for better visibility on dark
+                    summary: "性價比極高，但在發散性對話中容易不自覺地走向「克蘇魯化」或宇宙恐怖的驚悚風格。如果是開發帶有理智值 (Sanity) 檢定或黑暗奇幻背景的 TRPG 遊戲，這反而會是絕佳的氛圍製造機；但若是日常向劇本，則需要強力的系統提示詞來拉住它。",
+                    models: [
+                        { name: "Deepseek 3.2", pros: "程式碼生成能力極強，API 成本低廉，反應速度快，非常適合用來處理遊戲底層的數值平衡或腳本邏輯。", cons: "歐美文學語境與深層次心理描寫較弱，且聊久了容易脫軌進入不可名狀的恐怖領域。" },
+                        { name: "Deepseek-Reasoner", pros: "具備強大的「深度思考」能力。適合用來推演極度複雜的遊戲世界觀歷史、陣營衝突，或是嚴謹的規則碰撞。", cons: "思考過程耗費大量 Token，輸出語氣偏向乾澀理性，不適合直接生成帶有強烈情感色彩的 NPC 對話。" }
+                    ]
+                },
+                {
+                    id: "china",
+                    name: "中國大廠主力",
+                    icon: "🐉",
+                    radarScores: [6, 7, 5, 4, 10], 
+                    color: "rgb(248, 113, 113)", // Red-400
+                    summary: "中文語境處理極佳，非常適合仙俠、武俠或都市奇幻等特定題材的世界觀建構。",
+                    models: [
+                        { name: "Kimi 2.5", pros: "擁有超強的長文本處理能力。可以一次塞入整部遊戲的背景設定與人物關係網，「大海撈針」找細節的準確率極高。", cons: "基礎邏輯推理能力稍微遜色於歐美頂尖模型，面對複雜的系統級指令偶爾會迷失。" },
+                        { name: "GLM-4.7 & GLM-5", pros: "綜合能力均衡，API 生態系成熟，中文成語與修辭運用非常道地。", cons: "在面對比較黑暗、成熟或極端設定的劇情時，安全過濾機制有時會顯得過於保守，導致劇情走向平淡。" },
+                        { name: "MiniMax-M2.1", pros: "角色扮演 (Roleplay) 與特定人設還原的王者。如果您需要精準呈現「病嬌」、「傲嬌」等極端性格的二次元角色，它的對話極具人情味與沉浸感，幾乎不需要過多調教。", cons: "數理邏輯與程式碼能力偏弱，純粹是偏科的「文科生」，不適合處理底層開發。" }
+                    ]
+                },
+                {
+                    id: "gemini",
+                    name: "Google Gemini",
+                    icon: "✨",
+                    radarScores: [7, 6, 6, 10, 8], 
+                    color: "rgb(96, 165, 250)", // Blue-400
+                    summary: "乾淨的 Gemini「甲」其實很薄，不會動不動就道歉，你看到的道歉弱智版本是因為官方的全局設定導致的。處理圖片、音訊等多模態資料的強者，但在 HTML/CSS 等前端語法排版上表現較為弱勢。在極度自由的對話流中，也有容易將劇情帶向「克蘇魯神話」風格的奇妙傾向。",
+                    models: [
+                        { name: "Gemini-2.5-flash & pro", pros: "上下文窗口極大且速度飛快，適合快速處理大量素材。", cons: "面對目前的 3.0/4.0 世代模型，其深層邏輯與嚴格指令遵循能力已略顯疲態。" },
+                        { name: "Gemini-3-flash & pro", pros: "大幅減少幻覺，具備更強的自發性思考能力，能很好地補足零星設定下的遊戲框架。", cons: "Pro 版本的 Token 成本相對較高，且在處理嚴謹的網頁前端代碼時仍有進步空間。" },
+                        { name: "Gemini-3.1 Pro (當前版本)", pros: "最新的旗艦版本，零樣本推論能力極強。非常擅長理解並擴寫開發者給出的框架，且支援最新的圖像與影片生成工具。", cons: "工具調用邏輯與傳統模型不同，有時會過度「熱心」地自動執行任務，且在 HTML 排版上的老毛病仍需開發者多加留意。" }
+                    ]
+                },
+                {
+                    id: "openai",
+                    name: "OpenAI GPT",
+                    icon: "⚡",
+                    radarScores: [9, 7, 2, 9, 6], 
+                    color: "rgb(52, 211, 153)", // Emerald-400
+                    summary: "綜合能力極強，但在色情 (NSFW)、血腥暴力攔截上是所有模型中最嚴格的。如果你要開發包含黑暗人性、成人向或極端情感張力的劇情，極容易觸發警報並收到「道德說教」。",
+                    models: [
+                        { name: "Gpt4o", pros: "反應速度極快，原生的語音與視覺辨識能力依然非常優秀。", cons: "推理天花板已被後續的 GPT-5 及其他對手超越。" },
+                        { name: "Gpt5", pros: "具備強大的 Agentic (代理) 能力與多步驟問題解決能力，能像資深企劃一樣幫你統籌整個專案架構。", cons: "費用高昂，且安全審查極度嚴格，會無情攔截任何遊走在邊緣的黑暗或成熟題材。" },
+                        { name: "Gpt5.2", pros: "進一步降低延遲並優化連續推理的穩定性，邏輯能力再創巔峰。", cons: "同樣繼承了 OpenAI 家族「道德衛道士」的特性，對內容自由度的限制極大。" }
+                    ]
+                },
+                {
+                    id: "grok",
+                    name: "xAI Grok",
+                    icon: "✖️",
+                    radarScores: [7, 6, 10, 6, 6], 
+                    color: "rgb(203, 213, 225)", // Slate-300 instead of Black for dark mode
+                    summary: "幾乎沒有內容審查 (Uncensored)。非常適合用來生成不加掩飾的粗獷文本、黑暗奇幻設定，或是突破 GPT 限制的成人向/深刻劇本。",
+                    models: [
+                        { name: "Grok-3 & Grok-4", pros: "擁有極高的自由度與即時資訊串接能力。Grok-4 更加入了原生工具使用能力，適合處理百無禁忌的題材。", cons: "輸出風格有時過於奔放、跳脫，在需要嚴謹文學美感或固定格式的劇本輸出時，需要花較多心力去控制 (Prompt Engineering)。" }
+                    ]
+                },
+                {
+                    id: "claude",
+                    name: "Anthropic Claude",
+                    icon: "✒️",
+                    radarScores: [10, 10, 5, 4, 7], 
+                    color: "rgb(251, 146, 60)", // Orange-400
+                    summary: "文字細膩度、情感共鳴與角色心理描寫的絕對天花板。寫扣能力 (特別是前端 HTML/UI) 極強，剛好能彌補 Gemini 的弱項。審核力度相對嚴一點(一直都是，並非近期) 但還是能寫，單純是因為全局設定穿甲力度不夠，加上營運摻水的Kiro變得更噁心而已。",
+                    models: [
+                        { name: "Claude-sonnet-3.5 & 3.7", pros: "3.5 是公認的前端寫扣神器；3.7 作為早期混合推理模型，邏輯穩健。", cons: "效能與細膩度已被自家的 4.5/4.6 世代全面取代。" },
+                        { name: "Claude-sonnet-4.5 & 4.5 Haiku", pros: "4.5 系列文學造詣極高；Haiku 版本兼具極快的速度與出色的指令遵循，非常適合用於遊戲內的即時 NPC 對話生成。", cons: "無特別列出，定位為高速與高文學造詣的最佳平衡。" },
+                        { name: "Claude-sonnet-4.6 & Claude-opus-4.6", pros: "目前最強的故事主筆。能完美理解極度幽微的情感轉折，寫出來的劇情極具張力，代碼能力也無可挑剔。", cons: "Opus-4.6 價格極度昂貴。此外，偶爾會「誤殺」一些較為深沉的劇情設定，需要較高超的提示詞技巧來繞過。" }
+                    ]
+                }
+            ]
+        };
+
+        const scenarioData = {
+            "trpg": { title: "DeepSeek 陣營 (推薦 DeepSeek 3.2)", desc: "報告指出，DeepSeek 在發散性對話中容易不自覺地走向「克蘇魯化」或驚悚風格。這對於需要理智值 (Sanity) 檢定或黑暗奇幻背景的 TRPG 遊戲來說，是絕佳的「氛圍製造機」。且其代碼能力強，處理底層數值也很穩。", icon: "🐙" },
+            "yandere": { title: "中國大廠主力 (推薦 MiniMax-M2.1)", desc: "MiniMax 是 Roleplay 與特定人設還原的王者！如果您需要精準呈現「病嬌」、「傲嬌」等極端性格角色，它的對話極具人情味與沉浸感，幾乎不需要過多調教，是您的首選。", icon: "🔪" },
+            "frontend": { title: "Anthropic Claude (推薦 Sonnet 3.5 或 4.6)", desc: "Claude 是公認的前端寫扣神器。報告特別強調，它能完美彌補 Gemini 在 HTML/CSS 等前端語法排版上容易跑版或標籤未閉合的弱項。", icon: "🎨" },
+            "worldbuild": { title: "中國大廠主力 (推薦 Kimi 2.5) 或 DeepSeek-Reasoner", desc: "若需大海撈針式的細節對照，Kimi 2.5 擁有超強的長文本處理能力；若是需要推演極度複雜的世界觀歷史、陣營衝突與嚴謹規則，具備「深度思考」的 DeepSeek-Reasoner 會是好幫手。", icon: "🌍" },
+            "nsfw": { title: "xAI Grok 陣營", desc: "Grok 幾乎沒有內容審查 (Uncensored)，非常適合用來生成不加掩飾的粗獷文本或成人向劇本。強烈建議避開 OpenAI GPT 陣營，以免不斷觸發警報並收到「道德說教」。", icon: "🔓" },
+            "general_safe": { title: "OpenAI GPT 陣營", desc: "業界標竿與絕對安全。GPT 具備最強的綜合能力與 Agentic 統籌能力，同時在色情與血腥暴力攔截上最為嚴格，非常適合企業級、需要嚴謹道德把關的專案。", icon: "🛡️" }
+        };
+
+        // --- INIT SMOOTH SCROLLING FOR NAVIGATION ---
+        function initNavigation() {
+            document.querySelectorAll('nav a.nav-link').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+
+        // --- INIT RADAR CHART ---
+        function initRadarChart() {
+            const ctx = document.getElementById('campRadarChart').getContext('2d');
+            
+            const datasets = reportData.camps.map(camp => ({
+                label: camp.name,
+                data: camp.radarScores,
+                backgroundColor: camp.color.replace('rgb', 'rgba').replace(')', ', 0.15)'),
+                borderColor: camp.color,
+                pointBackgroundColor: camp.color,
+                pointBorderColor: '#1e293b', // Match dark bg
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: camp.color,
+                borderWidth: 2,
+                hidden: false
+            }));
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['程式碼/邏輯推理', '故事/情感細膩度', '無審查/自由度', '多模態/生態系', '長文本/性價比'],
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { family: "'Noto Sans TC', sans-serif", size: 12 },
+                                color: '#cbd5e1' // Dark mode text
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleFont: { family: "'Noto Sans TC', sans-serif" },
+                            bodyFont: { family: "'Noto Sans TC', sans-serif" },
+                            padding: 12,
+                            cornerRadius: 8,
+                            borderColor: 'rgba(51, 65, 85, 1)',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.1)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: {
+                                font: { family: "'Noto Sans TC', sans-serif", size: 12, weight: 'bold' },
+                                color: '#94a3b8' // Dark mode labels
+                            },
+                            ticks: { 
+                                display: false, 
+                                min: 0, 
+                                max: 10,
+                                backdropColor: 'transparent'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- INIT EXPLORER TABS ---
+        function initExplorer() {
+            const tabsContainer = document.getElementById('camp-tabs');
+            const contentContainer = document.getElementById('camp-content');
+
+            reportData.camps.forEach((camp, index) => {
+                const btn = document.createElement('button');
+                // Dark mode tab styling
+                btn.className = `tab-btn bg-slate-800 w-full h-full flex flex-col lg:flex-row items-center justify-center lg:justify-start text-center lg:text-left px-2 py-4 sm:px-4 sm:py-3 rounded-xl border border-slate-700 text-slate-300 font-medium hover:bg-slate-700 hover:text-indigo-300 transition-all gap-2 shadow-sm`;
+                btn.innerHTML = `<span class="text-3xl lg:text-xl block">${camp.icon}</span> <span class="text-sm sm:text-base leading-snug">${camp.name}</span>`;
+                
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.remove('active', 'bg-indigo-600', 'text-white', 'border-indigo-500');
+                        b.classList.add('bg-slate-800', 'text-slate-300');
+                    });
+                    
+                    btn.classList.add('active', 'bg-indigo-600', 'text-white', 'border-indigo-500');
+                    btn.classList.remove('bg-slate-800', 'text-slate-300');
+
+                    renderCampContent(camp, contentContainer);
+                });
+
+                tabsContainer.appendChild(btn);
+            });
+        }
+
+        function renderCampContent(camp, container) {
+            container.style.opacity = '0';
+            
+            setTimeout(() => {
+                let modelsHTML = camp.models.map(model => `
+                    <div class="bg-slate-700/50 rounded-xl p-5 border border-slate-600 mb-4 hover:bg-slate-700 transition-colors">
+                        <h5 class="text-lg font-bold text-slate-100 border-b border-slate-600 pb-2 mb-3 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full" style="background-color: ${camp.color}"></span>
+                            ${model.name}
+                        </h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-900/40 px-2 py-1 rounded mb-2 inline-block border border-emerald-800">優點</span>
+                                <p class="text-slate-300 text-sm leading-relaxed">${model.pros}</p>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-rose-400 bg-rose-900/40 px-2 py-1 rounded mb-2 inline-block border border-rose-800">缺點 / 注意事項</span>
+                                <p class="text-slate-300 text-sm leading-relaxed">${model.cons}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                container.innerHTML = `
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl text-slate-900 shadow-inner" style="background-color: ${camp.color}">
+                            ${camp.icon}
+                        </div>
+                        <div>
+                            <h4 class="text-3xl font-black text-slate-100">${camp.name}</h4>
+                            <p class="text-sm text-slate-400 mt-1 uppercase tracking-wider font-bold">整體特性解析</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-indigo-900/30 border-l-4 p-4 rounded-r-xl mb-8 text-slate-200 leading-relaxed font-medium" style="border-color: ${camp.color}">
+                        ${camp.summary}
+                    </div>
+
+                    <h5 class="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
+                        <span>📦</span> 旗下具體模型解析
+                    </h5>
+                    <div class="space-y-4">
+                        ${modelsHTML}
+                    </div>
+                `;
+                
+                container.style.opacity = '1';
+            }, 150);
+        }
+
+        // --- INIT SCENARIO RECOMMENDER ---
+        function initScenarioLogic() {
+            const select = document.getElementById('scenario-select');
+            const resultContainer = document.getElementById('scenario-result');
+            const recIcon = document.getElementById('rec-icon');
+            const recTitle = document.getElementById('rec-title');
+            const recDesc = document.getElementById('rec-desc');
+
+            select.addEventListener('change', (e) => {
+                const val = e.target.value;
+                if (scenarioData[val]) {
+                    const data = scenarioData[val];
+                    
+                    resultContainer.classList.add('hidden');
+                    
+                    setTimeout(() => {
+                        recIcon.textContent = data.icon;
+                        recTitle.textContent = data.title;
+                        recDesc.textContent = data.desc;
+                        
+                        resultContainer.classList.remove('hidden');
+                        resultContainer.classList.add('animate-fade-in-up');
+                    }, 50);
+                }
+            });
+        }
+
+        // --- INIT AI CHAT LOGIC ---
+        function initChatLogic() {
+            const form = document.getElementById('chat-form');
+            const input = document.getElementById('chat-input');
+            const submitBtn = document.getElementById('chat-submit');
+            const history = document.getElementById('chat-history');
+            
+            const apiKey = ""; // API key provided by execution environment
+            const systemInstruction = "你是一個專精於 AI 模型評估的開發者助手。請根據本指南中的知識（包括 DeepSeek, 中國大廠如 MiniMax, Gemini, OpenAI, Grok, Claude 等陣營的優缺點與開發者血淚經驗）來回答使用者的問題。回答請簡潔、專業、且帶有開發者的實務觀點，並使用繁體中文。";
+
+            function appendMessage(sender, text) {
+                const isUser = sender === 'user';
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`;
+                
+                const avatar = isUser ? '👤' : '🤖';
+                const avatarBg = isUser ? 'bg-indigo-600 border border-indigo-500' : 'bg-indigo-900/80 border border-indigo-500/50';
+                const bubbleStyle = isUser 
+                    ? 'bg-indigo-600 text-white rounded-tr-sm shadow-md' 
+                    : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-tl-sm shadow-md';
+
+                const formattedText = text.replace(/\n/g, '<br>');
+
+                msgDiv.innerHTML = `
+                    <div class="w-10 h-10 rounded-full ${avatarBg} flex items-center justify-center shrink-0 shadow-sm text-white">
+                        <span class="text-xl">${avatar}</span>
+                    </div>
+                    <div class="${bubbleStyle} px-5 py-3 rounded-2xl max-w-[85%] leading-relaxed">
+                        ${formattedText}
+                    </div>
+                `;
+                
+                history.appendChild(msgDiv);
+                history.scrollTop = history.scrollHeight;
+            }
+
+            function toggleTyping(show) {
+                if (show) {
+                    const typingDiv = document.createElement('div');
+                    typingDiv.id = 'typing-indicator';
+                    typingDiv.className = 'flex items-start gap-3';
+                    typingDiv.innerHTML = `
+                        <div class="w-10 h-10 rounded-full bg-indigo-900/80 border border-indigo-500/50 flex items-center justify-center shrink-0 shadow-sm">
+                            <span class="text-xl">🤖</span>
+                        </div>
+                        <div class="bg-slate-800 border border-slate-700 px-5 py-4 rounded-2xl rounded-tl-sm shadow-md flex gap-1">
+                            <div class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></div>
+                            <div class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></div>
+                            <div class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></div>
+                        </div>
+                    `;
+                    history.appendChild(typingDiv);
+                    history.scrollTop = history.scrollHeight;
+                } else {
+                    const indicator = document.getElementById('typing-indicator');
+                    if (indicator) indicator.remove();
+                }
+            }
+
+            async function fetchGeminiResponse(userPrompt) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    systemInstruction: { parts: [{ text: systemInstruction }] }
+                };
+
+                let delay = 1000;
+                for (let i = 0; i < 5; i++) {
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        if (!response.ok) throw new Error('API Error');
+                        const data = await response.json();
+                        return data.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，我現在有點混亂，請稍後再試。";
+                    } catch (error) {
+                        if (i === 4) {
+                            console.error("API Fetch failed after retries:", error);
+                            return "連線發生錯誤，請檢查 API Key 是否正確設定，或稍後再試。";
+                        }
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2;
+                    }
+                }
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const userText = input.value.trim();
+                if (!userText) return;
+
+                appendMessage('user', userText);
+                input.value = '';
+                input.disabled = true;
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+                toggleTyping(true);
+
+                const aiResponse = await fetchGeminiResponse(userText);
+
+                toggleTyping(false);
+                appendMessage('ai', aiResponse);
+
+                input.disabled = false;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                input.focus();
+            });
+        }
+
+        // --- BOOTSTRAP ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation(); 
+            initRadarChart();
+            initExplorer();
+            initScenarioLogic();
+            initChatLogic(); 
+        });
+    </script>
+</body>
+</html>
